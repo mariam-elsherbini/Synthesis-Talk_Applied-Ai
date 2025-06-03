@@ -1,0 +1,5 @@
+model_list:
+  - model_name: qwen2.5-coder:7b
+    litellm_provider: openai
+    api_key: ngu-y8PCtqZW9R
+    api_base: https://ngullama.femtoid.com/v1
