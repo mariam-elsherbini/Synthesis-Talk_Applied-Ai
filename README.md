@@ -1,341 +1,284 @@
-# SynthesisTalk - LLM Integration Component
+# SynthesisTalk 🤖💬
 
-This is the LLM Integration component for the SynthesisTalk project, a collaborative research assistant that demonstrates conversational agency, tool usage, and advanced reasoning techniques.
+An AI-powered research assistant that combines document analysis, web search, and intelligent conversation to help users explore complex topics through an intuitive interface.
 
 ## 🎯 Project Overview
 
-SynthesisTalk is an intelligent research assistant that helps users explore complex topics through interactive conversation. This LLM integration component provides:
+SynthesisTalk is a comprehensive research platform built for the CSAI 422 - Applied Generative AI course at New Giza University. It demonstrates how modern Large Language Models can be integrated with custom tools to create powerful research workflows.
 
-- **Conversational Agency**: Multi-turn conversations with context maintenance
-- **Tool Integration**: Document analysis, web search, note-taking, and explanation tools
-- **Advanced Reasoning**: Chain of Thought and ReAct reasoning techniques
-- **Flexible Architecture**: Support for multiple LLM providers (NGU, GROQ, OpenAI-compatible APIs)
+### Key Features
+
+- **📄 Document Analysis**: Upload and analyze PDF documents with AI-powered summarization
+- **🔍 Web Search Integration**: Search the web and get AI-synthesized results
+- **💭 Intelligent Chat**: Multi-turn conversations with context awareness
+- **📝 Note-Taking System**: Organize and save research insights
+- **🧠 Advanced Reasoning**: Chain-of-thought and ReAct reasoning patterns
+- **📊 Export Capabilities**: Export findings to PDF format
 
 ## 🏗️ Architecture
 
-```
-SynthesisTalk LLM Integration
-├── llm_client.py          # Core LLM integration with tools and reasoning
-├── main.py               # FastAPI backend server
-├── test_llm.py           # Comprehensive test suite
-├── requirements.txt      # Python dependencies
-└── setup.sh             # Setup script
-```
+### Three-Tier Architecture
 
-### Core Components
+1. **Frontend** - React.js with Vite + TailwindCSS
+2. **Backend** - FastAPI with tool orchestration
+3. **LLM Integration** - Unified module supporting multiple providers (NGU, Groq)
 
-1. **SynthesisTalkLLM**: Main LLM integration class
-2. **ToolManager**: Manages and executes various research tools
-3. **ConversationManager**: Handles conversation history and context
-4. **ReasoningEngine**: Implements Chain of Thought and ReAct reasoning
-5. **FastAPI Backend**: RESTful API for frontend integration
+```
+project-root/
+├── backend/
+│   ├── main.py                 # FastAPI server
+│   ├── llm_router.py          # LLM provider routing
+│   ├── document_tools.py      # PDF processing & summarization
+│   ├── web_tools.py           # Web search functionality
+│   ├── notes_tools.py         # Note management
+│   ├── explanation_tools.py   # Concept explanations
+│   ├── reasoning.py           # Chain-of-thought reasoning
+│   ├── export_tools.py        # PDF export functionality
+│   ├── utils.py               # Utility functions
+│   └── .env                   # Environment configuration
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx           # Main application component
+│   │   ├── main.jsx          # React entry point
+│   │   └── index.css         # Tailwind styles
+│   ├── package.json
+│   └── vite.config.js
+└── requirements.txt
+```
 
 ## 🚀 Quick Start
 
-### 1. Setup Environment
+### Prerequisites
 
+- Python 3.8+
+- Node.js 16+
+- macOS Silicon (optimized for, but works on other platforms)
+
+### Installation
+
+1. **Clone and Setup Environment**
 ```bash
-# Make setup script executable and run it
-chmod +x setup.sh
-./setup.sh
+mkdir synthesistalk && cd synthesistalk
+python3 -m venv venv311
+source venv311/bin/activate  # On Windows: venv311\Scripts\activate
+```
 
-# Or manual setup:
-python3 -m venv venv
-source venv/bin/activate
+2. **Install Backend Dependencies**
+```bash
+mkdir backend && cd backend
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment Variables
+3. **Configure Environment Variables**
+Create `backend/.env`:
+```ini
+NGU_API_KEY="your-ngu-api-key"
+NGU_BASE_URL="https://ngullama.femtoid.com/v1"
+NGU_MODEL="qwen2.5-coder:7b"
 
-Your `.env` file should contain:
+GROQ_API_KEY="your_groq_key_here"
+GROQ_BASE_URL="https://api.groq.com/openai/v1"
+GROQ_MODEL="llama-3.3-70b-versatile"
 
-```env
-MODEL_SERVER=NGU
-NGU_API_KEY=ngu-y8PCtqZW9R
-NGU_BASE_URL=https://ngullama.femtoid.com/v1
-NGU_MODEL=qwen2.5-coder:7b
+MODEL_SERVER="NGU"  # or "GROQ"
+SERPAPI_KEY=""      # Optional for web search
 ```
 
-### 3. Test the Integration
-
+4. **Setup Frontend**
 ```bash
-# Activate virtual environment
-source venv/bin/activate
-
-# Run comprehensive tests
-python test_llm.py
+cd ../frontend
+npm install
 ```
 
-### 4. Start the Server
+### Running the Application
 
+1. **Start Backend Server**
 ```bash
-# Start FastAPI server
-python main.py
-
-# Or with uvicorn for development
+cd backend
 uvicorn main:app --reload --port 8000
 ```
 
-The API will be available at `http://localhost:8000` with interactive docs at `http://localhost:8000/docs`
-
-## 🔧 Usage Examples
-
-### Basic LLM Interaction
-
-```python
-from llm_client import ask_llm
-
-# Simple question
-response = ask_llm("What is artificial intelligence?")
-print(response)
-
-# With reasoning
-response = ask_llm(
-    "What are the challenges of AI in healthcare?",
-    reasoning_type="chain_of_thought"
-)
-```
-
-### Advanced Features
-
-```python
-from llm_client import SynthesisTalkLLM
-
-# Initialize LLM
-llm = SynthesisTalkLLM()
-
-# Multi-turn conversation with tools
-response1 = llm.chat("I want to research renewable energy")
-response2 = llm.chat("Can you analyze this document about solar panels?", use_tools=True)
-response3 = llm.chat("What are the latest developments?", reasoning_type="react")
-
-# Document analysis
-result = llm.analyze_document("research_paper.pdf", "key_points")
-
-# Get conversation history
-history = llm.conversation_manager.messages
-```
-
-### API Usage
-
+2. **Start Frontend Development Server**
 ```bash
-# Chat endpoint
-curl -X POST "http://localhost:8000/chat" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "Hello, I want to research AI in education",
-    "use_tools": true,
-    "reasoning_type": "chain_of_thought",
-    "session_id": "research_session_1"
-  }'
-
-# Upload document
-curl -X POST "http://localhost:8000/upload-document" \
-  -F "file=@document.pdf" \
-  -F "session_id=research_session_1"
-
-# Save note
-curl -X POST "http://localhost:8000/save-note" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Key Insight",
-    "content": "AI can personalize learning experiences",
-    "tags": ["AI", "education", "personalization"]
-  }'
+cd frontend
+npm run dev
 ```
 
-## 🛠️ Available Tools
+3. **Access Application**
+Open http://localhost:5173 in your browser
+
+## 🛠️ Core Components
+
+### Backend API Endpoints
+
+- `POST /chat` - Main chat interface
+- `POST /upload` - Document upload and analysis
+- `POST /websearch` - Web search functionality
+- `POST /notes` - Save research notes
+- `GET /notes` - Retrieve saved notes
+- `GET /explain` - Get concept explanations
+- `POST /reason` - Chain-of-thought reasoning
+- `POST /export` - Export to PDF
+
+### Frontend Features
+
+- **Responsive Design**: Built with TailwindCSS for modern UI/UX
+- **Real-time Chat**: Instant messaging with AI assistant
+- **File Upload**: Drag-and-drop PDF analysis
+- **Multi-tool Integration**: Seamless access to all research tools
+- **State Management**: Efficient React state handling
+
+## 🧠 LLM Integration
+
+### Multi-Provider Support
+- **NGU (NguLlama)**: Local/custom LLM deployment
+- **Groq**: High-performance inference
+- **OpenAI-compatible APIs**: Easy extension to other providers
+
+### Advanced Reasoning
+- **Chain-of-Thought**: Step-by-step problem solving
+- **ReAct Pattern**: Reasoning and acting in iterative loops
+- **Context Management**: Maintains conversation history
+
+## 📚 Research Tools
 
 ### 1. Document Analysis Tool
-
-- **Purpose**: Extract and analyze content from PDFs and text files
-- **Capabilities**: Summary, key points extraction, detailed analysis
-- **Usage**: Automatically triggered when documents are uploaded
+- Extracts text from PDF files using PyMuPDF
+- Generates structured summaries with markdown formatting
+- Creates detailed analysis with multiple sections
+- Handles large documents with content chunking
 
 ### 2. Web Search Tool
+- Integrates with SerpAPI for real-time search
+- Provides mock results for testing without API key
+- Synthesizes search results into coherent responses
+- Supports error handling and fallbacks
 
-- **Purpose**: Search for additional information on topics
-- **Capabilities**: Returns relevant search results with snippets
-- **Usage**: Activated when current knowledge needs supplementation
-
-### 3. Note-Taking Tool
-
-- **Purpose**: Save and organize important research findings
-- **Capabilities**: Structured notes with tags and timestamps
-- **Usage**: Automatically saves insights or manually triggered
+### 3. Note-Taking System
+- In-memory note storage with topic organization
+- RESTful API for note management
+- Integration with chat for automatic note generation
+- Export capabilities for research documentation
 
 ### 4. Explanation Tool
+- Multi-level explanations (basic, intermediate, advanced)
+- Context-aware concept clarification
+- Educational content generation
+- Adaptive complexity based on user needs
 
-- **Purpose**: Provide detailed explanations of concepts
-- **Capabilities**: Multi-level explanations (basic, intermediate, advanced)
-- **Usage**: Triggered when clarification is needed
+## 🔧 Development
 
-## 🧠 Reasoning Techniques
+### Code Structure
 
-### Chain of Thought (CoT)
+**Backend (Python/FastAPI)**
+- Modular design with separation of concerns
+- Tool-based architecture for easy extension
+- Robust error handling and logging
+- CORS-enabled for frontend integration
 
-Breaks down complex problems into step-by-step reasoning:
+**Frontend (React/JavaScript)**
+- Component-based architecture
+- Hooks for state management
+- Axios for API communication
+- TailwindCSS for styling
 
-```python
-response = llm.chat(
-    "How can AI improve healthcare outcomes?",
-    reasoning_type="chain_of_thought"
-)
+### Key Dependencies
+
+**Backend:**
+```
+fastapi>=0.68.0
+uvicorn>=0.15.0
+python-multipart>=0.0.5
+pydantic>=1.8.0
+python-dotenv>=0.19.0
+openai>=1.0.0
+requests>=2.26.0
+PyMuPDF>=1.20.0
+reportlab>=3.6.0
 ```
 
-### ReAct (Reasoning + Acting)
-
-Combines reasoning with tool usage in iterative cycles:
-
-```python
-response = llm.chat(
-    "Research the latest developments in quantum computing",
-    reasoning_type="react"
-)
+**Frontend:**
+```
+react>=18.2.0
+react-dom>=18.2.0
+axios>=1.5.0
+vite>=5.2.0
+tailwindcss>=3.3.2
 ```
 
-## 📡 API Endpoints
+## 🧪 Testing
 
-| Endpoint                             | Method | Description                           |
-| ------------------------------------ | ------ | ------------------------------------- |
-| `/chat`                              | POST   | Main chat interface with tool support |
-| `/upload-document`                   | POST   | Upload and analyze documents          |
-| `/save-note`                         | POST   | Save research notes                   |
-| `/notes`                             | GET    | Retrieve all saved notes              |
-| `/search`                            | POST   | Perform web search                    |
-| `/conversation-history/{session_id}` | GET    | Get conversation history              |
-| `/tools`                             | GET    | List available tools                  |
-| `/health`                            | GET    | Health check endpoint                 |
-
-## 🔍 Testing
-
-The project includes comprehensive tests:
-
+### Backend Testing
 ```bash
-# Run all tests
-python test_llm.py
+cd backend
+# Start the server
+uvicorn main:app --reload
 
-# Tests include:
-# ✅ Environment configuration
-# ✅ Basic LLM functionality
-# ✅ Advanced reasoning techniques
-# ✅ Tool integration
-# ✅ Document analysis
-# ✅ Conversation flow
-# ✅ API compatibility
+# Test endpoints
+curl -X GET "http://localhost:8000/"
+curl -X POST "http://localhost:8000/chat" -H "Content-Type: application/json" -d '{"messages": [{"role": "user", "content": "Hello"}]}'
 ```
 
-## 🎛️ Configuration Options
-
-### LLM Provider Configuration
-
-Switch between providers by changing `MODEL_SERVER` in `.env`:
-
-```env
-# NGU (Current)
-MODEL_SERVER=NGU
-NGU_API_KEY=your_key
-NGU_BASE_URL=https://ngullama.femtoid.com/v1
-NGU_MODEL=qwen2.5-coder:7b
-
-# GROQ Alternative
-MODEL_SERVER=GROQ
-GROQ_API_KEY=your_key
-GROQ_BASE_URL=https://api.groq.com/openai/v1
-GROQ_MODEL=llama-3.1-70b-versatile
+### Frontend Testing
+```bash
+cd frontend
+npm run dev
+# Open http://localhost:5173 and test UI components
 ```
 
-### Conversation Settings
+## 🚀 Deployment
 
-```python
-# Adjust conversation history length
-conversation_manager = ConversationManager(max_history=50)
+### Local Deployment
+The application is configured for local development but can be deployed to cloud platforms.
 
-# Enable/disable specific tools
-llm.tool_manager.tools.pop('web_search')  # Disable web search
-```
+### Recommended Production Setup
+1. **Containerization**: Use Docker for consistent deployment
+2. **Cloud Hosting**: Deploy on AWS, GCP, or Azure
+3. **Database**: Replace in-memory storage with PostgreSQL/MongoDB
+4. **Load Balancing**: Use Nginx for production traffic
+5. **SSL/HTTPS**: Implement secure connections
 
-## 📊 Performance Considerations
+## 🤝 Contributing
 
-- **Context Management**: Automatic conversation trimming to prevent token overflow
-- **Tool Caching**: Results cached to avoid redundant API calls
-- **Error Handling**: Comprehensive error handling with fallback mechanisms
-- **Session Management**: Isolated conversations per session
+### Development Team
+- **Mohamed Ayman** (202201208)
+- **Hana Ayman** (202101348) 
+- **Mariam ElSherbini** (202202568)
 
-## 🔒 Security Notes
+### Contributing Guidelines
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-- API keys are loaded from environment variables
-- File uploads are validated and sandboxed
-- Input sanitization prevents injection attacks
-- Session isolation ensures data privacy
+## 📝 License
 
-## 🚧 Development Notes
+This project is developed for educational purposes as part of the CSAI 422 course at New Giza University.
 
-### Adding New Tools
+## 🔮 Future Enhancements
 
-```python
-def my_custom_tool(param1: str, param2: int) -> ToolResult:
-    # Tool implementation
-    return ToolResult(success=True, data="result")
+### Performance Optimizations
+- Tool parallelization for faster response times
+- Caching mechanisms for frequently accessed data
+- Database integration for persistent storage
 
-# Register the tool
-llm.tool_manager.register_tool(
-    name="my_tool",
-    func=my_custom_tool,
-    description="Description of what the tool does",
-    parameters={
-        "type": "object",
-        "properties": {
-            "param1": {"type": "string"},
-            "param2": {"type": "integer"}
-        },
-        "required": ["param1", "param2"]
-    }
-)
-```
+### User Experience
+- Multi-topic research threads
+- Dark mode support
+- Advanced file management
+- Collaborative features
 
-### Custom Reasoning Techniques
+### Technical Improvements
+- Vector database integration for semantic search
+- Fine-tuned models for domain-specific tasks
+- Advanced export formats (Word, LaTeX)
+- Real-time collaboration features
 
-```python
-class CustomReasoningEngine(ReasoningEngine):
-    @staticmethod
-    def my_reasoning_prompt(question: str) -> str:
-        return f"Custom reasoning approach for: {question}"
-```
+## 📞 Support
 
-## 📝 Project Requirements Fulfillment
+For questions or issues related to this project, please refer to the course materials or contact the development team.
 
-This implementation satisfies all LLM Integration requirements:
+---
 
-- ✅ **LLM API Integration**: NGU/GROQ API integration with OpenAI-compatible interface
-- ✅ **Tool Management**: Four different tool types implemented
-- ✅ **Reasoning Techniques**: Chain of Thought and ReAct implemented
-- ✅ **Workflow Orchestration**: Seamless tool and reasoning coordination
-- ✅ **Self-Correction**: Error handling and retry mechanisms
-- ✅ **Conversation Context**: Multi-turn conversation with context maintenance
-
-## 🤝 Team Integration
-
-This LLM component integrates with:
-
-- **Frontend**: RESTful API with comprehensive endpoints
-- **Backend**: FastAPI server with proper error handling
-- **Database**: JSON-based storage (easily upgradeable to proper DB)
-
-## 📈 Future Enhancements
-
-- [ ] Add vector database for document embeddings
-- [ ] Implement real web search API integration
-- [ ] Add streaming responses for real-time chat
-- [ ] Implement conversation summarization
-- [ ] Add multi-modal support (images, audio)
-- [ ] Implement advanced caching strategies
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **API Key Errors**: Ensure `.env` file is properly configured
-2. **Import Errors**: Activate virtual environment with `source venv/bin/activate`
-3. **Tool Failures**: Check file permissions and network connectivity
-4. **Memory Issues**: Reduce conversation history length
+**SynthesisTalk** - Empowering research through AI-driven synthesis and conversation.
