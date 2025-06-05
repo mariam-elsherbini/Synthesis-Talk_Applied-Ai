@@ -1,203 +1,215 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
+function Section({ title, children }) {
+  return (
+    <div className="bg-white shadow-md rounded-xl p-6 space-y-4">
+      <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+      {children}
+    </div>
+  );
+}
+
 function App() {
-  const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState([]);
-  const [file, setFile] = useState(null);
   const [summary, setSummary] = useState("");
   const [query, setQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [noteTopic, setNoteTopic] = useState("");
-  const [noteContent, setNoteContent] = useState("");
+  const [queryResponse, setQueryResponse] = useState("");
   const [notes, setNotes] = useState([]);
-  const [explainQuery, setExplainQuery] = useState("");
-  const [explanation, setExplanation] = useState("");
-  const [reasonPrompt, setReasonPrompt] = useState("");
-  const [reasoningResult, setReasoningResult] = useState("");
-  const [pdfContent, setPdfContent] = useState("");
-  const [pdfFilename, setPdfFilename] = useState("output.pdf");
+  const [noteInput, setNoteInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const sendChat = async () => {
-    const updatedMessages = [...chatMessages, { role: "user", content: chatInput }];
-    const res = await axios.post("http://localhost:8000/chat", { messages: updatedMessages });
-    updatedMessages.push(res.data.choices[0].message);
-    setChatMessages(updatedMessages);
-    setChatInput("");
+  const chatEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const uploadFile = async () => {
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  const handleFileUpload = async () => {
+    if (!file) return;
+    setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
-    const res = await axios.post("http://localhost:8000/upload", formData);
-    setSummary(res.data.summary);
+    try {
+      const res = await axios.post("http://localhost:8000/upload", formData);
+      setSummary(res.data.summary);
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const searchWeb = async () => {
-    const res = await axios.get(`http://localhost:8000/search?query=${query}`);
-    setSearchResults(res.data);
+  const handleQuery = async () => {
+    if (!query) return;
+    setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:8000/websearch", {
+        query,
+      });
+      setQueryResponse(res.data.response);
+    } catch (err) {
+      console.error("Query error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const saveNote = async () => {
-    await axios.post("http://localhost:8000/note", { topic: noteTopic, content: noteContent });
-    const notesRes = await axios.get("http://localhost:8000/notes");
-    setNotes(notesRes.data);
+  const handleAddNote = async () => {
+    if (!noteInput) return;
+    try {
+      await axios.post("http://localhost:8000/notes", { note: noteInput });
+      setNotes([...notes, noteInput]);
+      setNoteInput("");
+    } catch (err) {
+      console.error("Note error:", err);
+    }
   };
 
-  const explainConcept = async () => {
-    const res = await axios.get(`http://localhost:8000/explain?query=${explainQuery}`);
-    setExplanation(res.data.explanation);
-  };
-
-  const doReasoning = async () => {
-    const res = await axios.post("http://localhost:8000/reason", { prompt: reasonPrompt });
-    setReasoningResult(res.data.result);
-  };
-
-  const exportPDF = async () => {
-    await axios.post("http://localhost:8000/export", {
-      filename: pdfFilename,
-      content: pdfContent
-    });
-    alert("PDF exported on server!");
+  const handleChat = async () => {
+    if (!chatInput) return;
+    const updatedMessages = [
+      ...chatMessages,
+      { role: "user", content: chatInput },
+    ];
+    setChatMessages(updatedMessages);
+    setChatInput("");
+    setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:8000/chat", {
+        messages: updatedMessages,
+      });
+      setChatMessages([
+        ...updatedMessages,
+        { role: "assistant", content: res.data.response },
+      ]);
+    } catch (err) {
+      console.error("Chat error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold text-center">🧠 SynthesiTalk Frontend</h1>
-
-      {/* Chat Interface */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Chat</h2>
-        <div className="border p-4 h-48 overflow-y-auto bg-gray-50 rounded">
-          {chatMessages.map((msg, i) => (
-            <p key={i}><b>{msg.role}:</b> {msg.content}</p>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <input
-            className="border p-2 flex-1"
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Type message..."
-          />
-          <button className="bg-blue-600 text-white px-4 rounded" onClick={sendChat}>
-            Send
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-100 p-6 space-y-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-center text-blue-700">SynthesiTalk</h1>
 
       {/* PDF Upload */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Upload PDF</h2>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <button className="bg-green-600 text-white px-4 rounded ml-2" onClick={uploadFile}>
-          Upload & Summarize
-        </button>
+      <Section title="PDF Summarization">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Upload PDF</label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4 file:rounded-md
+              file:border-0 file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          <button
+            onClick={handleFileUpload}
+            className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            disabled={loading}
+          >
+            {loading ? "Summarizing..." : "Upload and Summarize"}
+          </button>
+        </div>
         {summary && (
-          <div className="bg-gray-100 p-3 rounded mt-2">
-            <strong>Summary:</strong> {summary}
+          <div className="prose bg-gray-50 p-4 rounded-md max-w-none">
+            <h3>Summary</h3>
+            <p>{summary}</p>
           </div>
         )}
-      </div>
+      </Section>
 
       {/* Web Search */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Web Search</h2>
+      <Section title="Web Search">
         <input
-          className="border p-2 w-full"
-          placeholder="Search the web..."
+          type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          placeholder="Ask about something..."
+          className="w-full p-2 border rounded"
         />
-        <button className="bg-purple-600 text-white px-4 rounded mt-1" onClick={searchWeb}>
-          Search
+        <button
+          onClick={handleQuery}
+          className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          disabled={loading}
+        >
+          {loading ? "Searching..." : "Search"}
         </button>
-        <ul className="list-disc ml-6">
-          {searchResults.map((res, i) => (
-            <li key={i}>
-              <a href={res.link} className="text-blue-600 underline" target="_blank" rel="noreferrer">
-                {res.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+        {queryResponse && (
+          <div className="bg-gray-50 p-4 mt-3 rounded-md">
+            <p>{queryResponse}</p>
+          </div>
+        )}
+      </Section>
 
       {/* Notes */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Notes</h2>
+      <Section title="Note Taking">
         <input
-          className="border p-2 w-full"
-          placeholder="Topic"
-          value={noteTopic}
-          onChange={(e) => setNoteTopic(e.target.value)}
+          type="text"
+          value={noteInput}
+          onChange={(e) => setNoteInput(e.target.value)}
+          placeholder="Add a new note"
+          className="w-full p-2 border rounded"
         />
-        <textarea
-          className="border p-2 w-full mt-1"
-          placeholder="Note content"
-          value={noteContent}
-          onChange={(e) => setNoteContent(e.target.value)}
-        />
-        <button className="bg-yellow-600 text-white px-4 rounded mt-1" onClick={saveNote}>
+        <button
+          onClick={handleAddNote}
+          className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+        >
           Save Note
         </button>
-        <ul className="list-disc ml-6">
-          {notes.map((note, i) => (
-            <li key={i}><strong>{note.topic}:</strong> {note.content}</li>
+        {notes.length > 0 && (
+          <ul className="list-disc ml-6 mt-3 text-gray-700">
+            {notes.map((note, idx) => (
+              <li key={idx}>{note}</li>
+            ))}
+          </ul>
+        )}
+      </Section>
+
+      {/* Chat */}
+      <Section title="Chat">
+        <div className="max-h-64 overflow-y-auto bg-gray-50 p-3 rounded space-y-2">
+          {chatMessages.map((msg, i) => (
+            <div
+              key={i}
+              className={`p-2 rounded-md ${
+                msg.role === "user"
+                  ? "bg-blue-100 text-right text-blue-900"
+                  : "bg-gray-200 text-left text-gray-800"
+              }`}
+            >
+              <span className="font-semibold capitalize">{msg.role}:</span>{" "}
+              {msg.content}
+            </div>
           ))}
-        </ul>
-      </div>
-
-      {/* Explain */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Explain Concept</h2>
-        <input
-          className="border p-2 w-full"
-          placeholder="What do you want explained?"
-          value={explainQuery}
-          onChange={(e) => setExplainQuery(e.target.value)}
-        />
-        <button className="bg-indigo-600 text-white px-4 rounded mt-1" onClick={explainConcept}>
-          Explain
-        </button>
-        {explanation && <div className="bg-gray-100 p-3 rounded mt-2">{explanation}</div>}
-      </div>
-
-      {/* Reasoning */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Reasoning Tool</h2>
-        <textarea
-          className="border p-2 w-full"
-          placeholder="Ask something that needs step-by-step reasoning..."
-          value={reasonPrompt}
-          onChange={(e) => setReasonPrompt(e.target.value)}
-        />
-        <button className="bg-pink-600 text-white px-4 rounded mt-1" onClick={doReasoning}>
-          Run Reasoning
-        </button>
-        {reasoningResult && <div className="bg-gray-100 p-3 rounded mt-2">{reasoningResult}</div>}
-      </div>
-
-      {/* Export */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Export to PDF</h2>
-        <input
-          className="border p-2 w-full"
-          placeholder="Filename (e.g., notes.pdf)"
-          value={pdfFilename}
-          onChange={(e) => setPdfFilename(e.target.value)}
-        />
-        <textarea
-          className="border p-2 w-full mt-1"
-          placeholder="Content to export"
-          value={pdfContent}
-          onChange={(e) => setPdfContent(e.target.value)}
-        />
-        <button className="bg-gray-700 text-white px-4 rounded mt-1" onClick={exportPDF}>
-          Export
-        </button>
-      </div>
+          <div ref={chatEndRef} />
+        </div>
+        <div className="flex mt-2 space-x-2">
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-grow p-2 border rounded"
+          />
+          <button
+            onClick={handleChat}
+            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            disabled={loading}
+          >
+            {loading ? "Sending..." : "Send"}
+          </button>
+        </div>
+      </Section>
     </div>
   );
 }
