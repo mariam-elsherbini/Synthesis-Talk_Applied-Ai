@@ -49,6 +49,7 @@ project-root/
 ## 🚀 Quick Start
 
 ### Prerequisites
+<<<<<<< HEAD
 
 - Python 3.8+
 - Node.js 16+
@@ -57,7 +58,16 @@ project-root/
 ### Installation
 
 1. **Clone and Setup Environment**
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 
+- Python 3.8+
+- Node.js 16+
+- macOS Silicon (optimized for, but works on other platforms)
+
+### Installation
+
+1. **Clone and Setup Environment**
 ```bash
 mkdir synthesistalk && cd synthesistalk
 python3 -m venv venv311
@@ -65,13 +75,17 @@ source venv311/bin/activate  # On Windows: venv311\Scripts\activate
 ```
 
 2. **Install Backend Dependencies**
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 ```bash
 mkdir backend && cd backend
 pip install -r requirements.txt
 ```
 
 3. **Configure Environment Variables**
+<<<<<<< HEAD
    Create `backend/.env`:
 
 ```ini
@@ -83,35 +97,61 @@ GROQ_API_KEY="your_groq_key_here"
 GROQ_BASE_URL="https://api.groq.com/openai/v1"
 GROQ_MODEL="llama-3.3-70b-versatile"
 
+=======
+Create `backend/.env`:
+```ini
+NGU_API_KEY="your-ngu-api-key"
+NGU_BASE_URL="https://ngullama.femtoid.com/v1"
+NGU_MODEL="qwen2.5-coder:7b"
+
+GROQ_API_KEY="your_groq_key_here"
+GROQ_BASE_URL="https://api.groq.com/openai/v1"
+GROQ_MODEL="llama-3.3-70b-versatile"
+
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 MODEL_SERVER="NGU"  # or "GROQ"
 SERPAPI_KEY=""      # Optional for web search
 ```
 
 4. **Setup Frontend**
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 ```bash
 cd ../frontend
 npm install
 ```
 
 ### Running the Application
+<<<<<<< HEAD
 
 1. **Start Backend Server**
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 
+1. **Start Backend Server**
 ```bash
 cd backend
 uvicorn main:app --reload --port 8000
 ```
 
 2. **Start Frontend Development Server**
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 ```bash
 cd frontend
 npm run dev
 ```
 
 3. **Access Application**
+<<<<<<< HEAD
    Open http://localhost:5173 in your browser
+=======
+Open http://localhost:5173 in your browser
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 
 ## 🛠️ Core Components
 
@@ -137,13 +177,19 @@ npm run dev
 ## 🧠 LLM Integration
 
 ### Multi-Provider Support
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 - **NGU (NguLlama)**: Local/custom LLM deployment
 - **Groq**: High-performance inference
 - **OpenAI-compatible APIs**: Easy extension to other providers
 
 ### Advanced Reasoning
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 - **Chain-of-Thought**: Step-by-step problem solving
 - **ReAct Pattern**: Reasoning and acting in iterative loops
 - **Context Management**: Maintains conversation history
@@ -151,14 +197,22 @@ npm run dev
 ## 📚 Research Tools
 
 ### 1. Document Analysis Tool
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 - Extracts text from PDF files using PyMuPDF
 - Generates structured summaries with markdown formatting
 - Creates detailed analysis with multiple sections
 - Handles large documents with content chunking
 
 ### 2. Web Search Tool
+- Integrates with SerpAPI for real-time search
+- Provides mock results for testing without API key
+- Synthesizes search results into coherent responses
+- Supports error handling and fallbacks
 
+<<<<<<< HEAD
 - Integrates with SerpAPI for real-time search
 - Provides mock results for testing without API key
 - Synthesizes search results into coherent responses
@@ -166,13 +220,21 @@ npm run dev
 
 ### 3. Note-Taking System
 
+=======
+### 3. Note-Taking System
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 - In-memory note storage with topic organization
 - RESTful API for note management
 - Integration with chat for automatic note generation
 - Export capabilities for research documentation
 
 ### 4. Explanation Tool
+- Multi-level explanations (basic, intermediate, advanced)
+- Context-aware concept clarification
+- Educational content generation
+- Adaptive complexity based on user needs
 
+<<<<<<< HEAD
 - Multi-level explanations (basic, intermediate, advanced)
 - Context-aware concept clarification
 - Educational content generation
@@ -200,6 +262,27 @@ npm run dev
 
 **Backend:**
 
+=======
+## 🔧 Development
+
+### Code Structure
+
+**Backend (Python/FastAPI)**
+- Modular design with separation of concerns
+- Tool-based architecture for easy extension
+- Robust error handling and logging
+- CORS-enabled for frontend integration
+
+**Frontend (React/JavaScript)**
+- Component-based architecture
+- Hooks for state management
+- Axios for API communication
+- TailwindCSS for styling
+
+### Key Dependencies
+
+**Backend:**
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 ```
 fastapi>=0.68.0
 uvicorn>=0.15.0
@@ -213,7 +296,10 @@ reportlab>=3.6.0
 ```
 
 **Frontend:**
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 ```
 react>=18.2.0
 react-dom>=18.2.0
@@ -223,9 +309,13 @@ tailwindcss>=3.3.2
 ```
 
 ## 🧪 Testing
+<<<<<<< HEAD
 
 ### Backend Testing
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 
+### Backend Testing
 ```bash
 cd backend
 # Start the server
@@ -237,7 +327,10 @@ curl -X POST "http://localhost:8000/chat" -H "Content-Type: application/json" -d
 ```
 
 ### Frontend Testing
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 ```bash
 cd frontend
 npm run dev
@@ -247,6 +340,7 @@ npm run dev
 ## 🚀 Deployment
 
 ### Local Deployment
+<<<<<<< HEAD
 
 The application is configured for local development but can be deployed to cloud platforms.
 
@@ -306,4 +400,58 @@ For questions or issues related to this project, please refer to the course mate
 
 ---
 
+=======
+The application is configured for local development but can be deployed to cloud platforms.
+
+### Recommended Production Setup
+1. **Containerization**: Use Docker for consistent deployment
+2. **Cloud Hosting**: Deploy on AWS, GCP, or Azure
+3. **Database**: Replace in-memory storage with PostgreSQL/MongoDB
+4. **Load Balancing**: Use Nginx for production traffic
+5. **SSL/HTTPS**: Implement secure connections
+
+## 🤝 Contributing
+
+### Development Team
+- **Mohamed Ayman** (202201208)
+- **Hana Ayman** (202101348) 
+- **Mariam ElSherbini** (202202568)
+
+### Contributing Guidelines
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📝 License
+
+This project is developed for educational purposes as part of the CSAI 422 course at New Giza University.
+
+## 🔮 Future Enhancements
+
+### Performance Optimizations
+- Tool parallelization for faster response times
+- Caching mechanisms for frequently accessed data
+- Database integration for persistent storage
+
+### User Experience
+- Multi-topic research threads
+- Dark mode support
+- Advanced file management
+- Collaborative features
+
+### Technical Improvements
+- Vector database integration for semantic search
+- Fine-tuned models for domain-specific tasks
+- Advanced export formats (Word, LaTeX)
+- Real-time collaboration features
+
+## 📞 Support
+
+For questions or issues related to this project, please refer to the course materials or contact the development team.
+
+---
+
+>>>>>>> ee9b4a27cb00c8362366f17d59d31dce3db4132f
 **SynthesisTalk** - Empowering research through AI-driven synthesis and conversation.
